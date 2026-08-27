@@ -1,0 +1,21 @@
+{
+  "lab": "ch06-docker-readiness",
+  "checks": [
+    {
+      "file": "readiness.py",
+      "contains": [
+        "shutil.which(\"docker\")",
+        "[\"docker\", \"info\"]",
+        "cli-missing",
+        "daemon-unavailable",
+        "\"ready\""
+      ],
+      "not_contains": [
+        "docker system prune",
+        "docker volume prune",
+        "wsl --unregister",
+        "C:\\\\Users\\\\"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "image": "alpine:3.20",
+  "name": "wslbook-ch07-demo",
+  "command": [
+    "printf",
+    "hello-container\\n"
+  ],
+  "expected_stdout": "hello-container\n"
+}

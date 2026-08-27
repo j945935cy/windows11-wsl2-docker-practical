@@ -1,0 +1,34 @@
+{
+  "lab": "ch09-storage",
+  "checks": [
+    {
+      "file": "compose.yaml",
+      "contains": [
+        "image: alpine:3.20",
+        "volume-init:",
+        "user: \"0:0\"",
+        "condition: service_completed_successfully",
+        "user: \"${HOST_UID:-1000}:${HOST_GID:-1000}\"",
+        "./bind-data:/data/bind",
+        "ch09_data:/data/volume",
+        "name: wslbook_ch09_data"
+      ],
+      "not_contains": [
+        "/home/",
+        "docker system prune",
+        "docker volume prune",
+        "wsl --unregister",
+        "C:\\\\Users\\\\"
+      ]
+    }
+  ],
+  "integration": [
+    [
+      "docker",
+      "compose",
+      "-f",
+      "compose.yaml",
+      "config"
+    ]
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "lab": "ch05-networking",
+  "checks": [
+    {
+      "file": "server.py",
+      "contains": [
+        "HOST = \"127.0.0.1\"",
+        "PORT = 8000",
+        "ThreadingHTTPServer",
+        "Content-Length"
+      ],
+      "not_contains": [
+        "HOST = \"0.0.0.0\"",
+        "docker system prune",
+        "docker volume prune",
+        "wsl --unregister",
+        "C:\\\\Users\\\\"
+      ]
+    }
+  ]
+}

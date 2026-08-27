@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sunny PostgreSQL backup manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "database", "created_utc", "archive", "sha256"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "database": {"type": "string", "minLength": 1},
+    "created_utc": {"type": "string", "format": "date-time"},
+    "archive": {"type": "string", "pattern": "^[^/\\\\]+\\.sql\\.gz$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

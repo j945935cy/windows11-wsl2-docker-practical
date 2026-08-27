@@ -1,0 +1,26 @@
+{
+  "lab": "ch04-paths",
+  "checks": [
+    {
+      "file": "path_demo.py",
+      "contains": [
+        "relative.is_absolute()",
+        "\"..\" in relative.parts",
+        "Path.cwd()"
+      ],
+      "not_contains": [
+        "docker system prune",
+        "docker volume prune",
+        "wsl --unregister",
+        "C:\\\\Users\\\\"
+      ]
+    },
+    {
+      "file": "sample/data.txt",
+      "contains": [
+        "WSL filesystem sample"
+      ],
+      "not_contains": []
+    }
+  ]
+}

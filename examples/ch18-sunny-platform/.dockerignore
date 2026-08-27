@@ -1,0 +1,7 @@
+.env
+backups/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+test_*.py
+README.md

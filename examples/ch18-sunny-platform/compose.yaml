@@ -1,0 +1,46 @@
+name: sunny-platform
+services:
+  api:
+    build: .
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:-sunny}
+      POSTGRES_DB: ${POSTGRES_DB:-sunny}
+      DB_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    ports:
+      - "127.0.0.1:8018:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+  db:
+    build:
+      context: ./db
+    image: sunny-platform-db:16.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sunny}
+      POSTGRES_DB: ${POSTGRES_DB:-sunny}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+secrets:
+  db_password:
+    file: ${SUNNY_DB_PASSWORD_FILE:-./secrets/db_password.txt}
+
+volumes:
+  pgdata:

@@ -1,0 +1,14 @@
+name: book-ch15
+services:
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:8015:8000"
+    secrets:
+      - api_token
+    environment:
+      SECRET_FILE: /run/secrets/api_token
+
+secrets:
+  api_token:
+    file: ${API_TOKEN_FILE:?set API_TOKEN_FILE to an ignored local secret file}

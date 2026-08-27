@@ -1,0 +1,39 @@
+{
+  "lab": "ch07-container-contract",
+  "checks": [
+    {
+      "file": "container-contract.json",
+      "contains": [
+        "\"alpine:3.20\"",
+        "\"wslbook-ch07-demo\"",
+        "\"expected_stdout\""
+      ],
+      "not_contains": [
+        "docker system prune",
+        "docker volume prune",
+        "wsl --unregister",
+        "C:\\\\Users\\\\"
+      ]
+    }
+  ],
+  "integration": [
+    [
+      "docker",
+      "run",
+      "--rm",
+      "--name",
+      "wslbook-ch07-demo",
+      "alpine:3.20",
+      "printf",
+      "hello-container\n"
+    ]
+  ],
+  "cleanup": [
+    [
+      "docker",
+      "rm",
+      "-f",
+      "wslbook-ch07-demo"
+    ]
+  ]
+}

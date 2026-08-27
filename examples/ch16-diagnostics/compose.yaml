@@ -1,0 +1,14 @@
+name: book-ch16
+services:
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:8016:8000"
+    environment:
+      DEPENDENCY_READY: "true"
+      LOG_LEVEL: INFO
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

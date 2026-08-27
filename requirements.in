@@ -1,0 +1,8 @@
+pyyaml
+pillow
+pytest
+fastapi
+uvicorn
+httpx
+pydantic
+psycopg[binary]

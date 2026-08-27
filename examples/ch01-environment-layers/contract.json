@@ -1,0 +1,20 @@
+{
+  "lab": "ch01-environment-layers",
+  "checks": [
+    {
+      "file": "layers.py",
+      "contains": [
+        "def detect_layer()",
+        "\"container\"",
+        "\"wsl\"",
+        "Path.cwd()"
+      ],
+      "not_contains": [
+        "docker system prune",
+        "docker volume prune",
+        "wsl --unregister",
+        "C:\\\\Users\\\\"
+      ]
+    }
+  ]
+}

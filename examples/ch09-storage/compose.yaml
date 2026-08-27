@@ -1,0 +1,25 @@
+services:
+  volume-init:
+    image: alpine:3.20
+    user: "0:0"
+    environment:
+      HOST_UID: "${HOST_UID:-1000}"
+      HOST_GID: "${HOST_GID:-1000}"
+    command: ["sh", "-c", "chown -R $${HOST_UID}:$${HOST_GID} /data/volume"]
+    volumes:
+      - ch09_data:/data/volume
+
+  writer:
+    image: alpine:3.20
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    depends_on:
+      volume-init:
+        condition: service_completed_successfully
+    command: ["sh", "-c", "printf bind > /data/bind/message.txt && printf volume > /data/volume/message.txt"]
+    volumes:
+      - ./bind-data:/data/bind
+      - ch09_data:/data/volume
+
+volumes:
+  ch09_data:
+    name: wslbook_ch09_data
