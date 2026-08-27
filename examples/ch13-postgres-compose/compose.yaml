@@ -1,13 +1,16 @@
 name: book-ch13
 services:
   db:
-    image: postgres:16.4-alpine
+    image: book-ch13-db:16.4
+    build:
+      context: ../..
+      dockerfile: examples/ch13-postgres-compose/db/Dockerfile
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-bookuser}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
       POSTGRES_DB: ${POSTGRES_DB:-bookdb}
-    ports:
-      - "127.0.0.1:5433:5432"
+    secrets:
+      - db_password
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
@@ -15,7 +18,74 @@ services:
       retries: 10
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+
+  api:
+    build:
+      context: ../..
+      dockerfile: examples/ch13-postgres-compose/Dockerfile
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DB:-bookdb}
+      PGUSER: ${POSTGRES_USER:-bookuser}
+      PGPASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    ports:
+      - "127.0.0.1:8013:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    image: book-ch13-migrate:16.4
+    build:
+      context: ../..
+      dockerfile: examples/ch13-postgres-compose/migrations/Dockerfile
+    profiles: ["migrate"]
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DB:-bookdb}
+      PGUSER: ${POSTGRES_USER:-bookuser}
+      PGPASSWORD_FILE: /run/secrets/db_password
+      MIGRATION_FILE: ${MIGRATION_FILE:-0002_add_source.sql}
+    secrets:
+      - db_password
+    depends_on:
+      db:
+        condition: service_healthy
+    command:
+      - sh
+      - -c
+      - |
+        if ! printf '%s\n' "$$MIGRATION_FILE" | grep -Eq '^[0-9]{4}_[a-z0-9_]+\.sql$$'; then
+          printf 'unsafe MIGRATION_FILE: %s\n' "$$MIGRATION_FILE" >&2
+          exit 64
+        fi
+        MIGRATION_PATH=/migrations/$$MIGRATION_FILE
+        if [ ! -f "$$MIGRATION_PATH" ]; then
+          printf 'migration is not a regular file: %s\n' "$$MIGRATION_FILE" >&2
+          exit 66
+        fi
+        umask 077
+        PGPASSFILE="$$(mktemp)"
+        trap 'rm -f "$$PGPASSFILE"' EXIT
+        printf '%s:%s:%s:%s:%s\n' \
+          "$$PGHOST" "$$PGPORT" "$$PGDATABASE" "$$PGUSER" \
+          "$$(cat "$$PGPASSWORD_FILE")" > "$$PGPASSFILE"
+        chmod 600 "$$PGPASSFILE"
+        export PGPASSFILE
+        psql --set ON_ERROR_STOP=1 -f "$$MIGRATION_PATH"
 
 volumes:
   pgdata:
+
+secrets:
+  db_password:
+    file: ${CH13_DB_SECRET_FILE:?set CH13_DB_SECRET_FILE to a local file outside the repository}

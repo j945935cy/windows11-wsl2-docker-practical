@@ -36,9 +36,13 @@ def test_unknown_route_is_a_real_negative_case() -> None:
     assert request("/missing").status_code == 404
 
 
-def test_container_runs_as_non_root_and_binds_all_container_interfaces() -> None:
+def test_container_uses_root_lock_healthcheck_non_root_and_loopback_contract() -> None:
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
-    assert "USER app" in dockerfile
+    assert "COPY requirements-lock.txt" in dockerfile
+    assert "examples/ch12-fastapi-container/app" in dockerfile
+    assert "USER appuser" in dockerfile
+    assert "HEALTHCHECK" in dockerfile
+    assert "/health" in dockerfile
     assert 'CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]' in dockerfile
 
 
@@ -47,3 +51,7 @@ def test_readme_has_root_normal_negative_verify_and_reset() -> None:
     for heading in ("## 從專案根目錄執行", "## 正常流程", "## 負向測試", "## 驗證", "## Reset"):
         assert heading in text
     assert "examples/ch12-fastapi-container" in text
+    assert "requirements-lock.txt" in text
+    assert "127.0.0.1:8012:8000" in text
+    assert "appuser" in text
+    assert "--format '{{.State.Health.Status}}'" in text

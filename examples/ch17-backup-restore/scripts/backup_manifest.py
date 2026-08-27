@@ -31,11 +31,15 @@ def create_manifest(
     manifest.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
-def verify_manifest(manifest: Path) -> Path:
+def verify_manifest(manifest: Path, expected_database: str | None = None) -> Path:
     data = json.loads(manifest.read_text(encoding="utf-8"))
     required = {"schema_version", "database", "created_utc", "archive", "sha256"}
     if data.keys() != required or data["schema_version"] != 1:
         raise ValueError("unsupported or incomplete manifest")
+    if expected_database is not None and data["database"] != expected_database:
+        raise ValueError(
+            f"backup database mismatch: expected {expected_database}, got {data['database']}"
+        )
     archive_name = data["archive"]
     if Path(archive_name).name != archive_name:
         raise ValueError("archive must be beside manifest")
@@ -56,11 +60,12 @@ def main() -> None:
     create.add_argument("--database", required=True)
     verify = subparsers.add_parser("verify")
     verify.add_argument("manifest", type=Path)
+    verify.add_argument("--expected-database")
     args = parser.parse_args()
     if args.command == "create":
         create_manifest(args.archive, args.manifest, args.database)
     else:
-        print(verify_manifest(args.manifest))
+        print(verify_manifest(args.manifest, args.expected_database))
 
 
 if __name__ == "__main__":

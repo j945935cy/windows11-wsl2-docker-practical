@@ -1,11 +1,16 @@
 name: book-ch17
 services:
   db:
-    image: postgres:16.4-alpine
+    image: book-ch17-db:16.4
+    build:
+      context: ../..
+      dockerfile: examples/ch17-backup-restore/db/Dockerfile
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-bookuser}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
       POSTGRES_DB: ${POSTGRES_DB:-bookdb}
+    secrets:
+      - db_password
     ports:
       - "127.0.0.1:5437:5432"
     healthcheck:
@@ -15,7 +20,10 @@ services:
       retries: 10
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
 
 volumes:
   pgdata:
+
+secrets:
+  db_password:
+    file: ${CH17_DB_SECRET_FILE:?set CH17_DB_SECRET_FILE to a local file outside the repository}

@@ -10,7 +10,7 @@
 
 本版不可變教材快照：
 
-https://github.com/j945935cy/windows11-wsl2-docker-practical/releases/tag/reader-files-v1.0
+https://github.com/j945935cy/windows11-wsl2-docker-practical/releases/tag/reader-files-v1.0.1
 
 ## 取得教材
 
