@@ -1,0 +1,53 @@
+name: 技術問題
+description: 回報可重現的 Windows 11、WSL 2 或 Docker 教材問題
+title: "[問題] "
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        請先執行環境檢查工具。公開輸出前，務必移除使用者名稱、私人路徑、token、密碼及公司 URL。
+  - type: dropdown
+    id: layer
+    attributes:
+      label: 問題所在層
+      options:
+        - Windows 11／PowerShell
+        - WSL 2
+        - Docker／Container
+        - 不確定
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: 執行命令
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: 實際輸出
+      description: 請先遮蔽敏感資訊。
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 預期結果
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 已去識別化的環境資訊
+      description: 可貼上 inspect_environment.py 或 inspect-host.ps1 的必要欄位。
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: 公開資訊確認
+      options:
+        - label: 我已移除秘密、私人路徑與未公開資料。
+          required: true

@@ -1,0 +1,41 @@
+name: 勘誤回報
+description: 回報書籍或隨書範例中的可定位錯誤
+title: "[勘誤] "
+labels: [errata]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感謝協助改善內容。請勿貼上 token、密碼、私人路徑、公司 URL 或未公開資料。
+  - type: input
+    id: location
+    attributes:
+      label: 位置
+      description: 請填章節、頁面、檔案或程式碼行號。
+      placeholder: Chapter 4／examples/.../file.py:20
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: 目前內容或行為
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 建議修正或預期行為
+    validations:
+      required: true
+  - type: input
+    id: edition
+    attributes:
+      label: 書籍／reader files 版本
+      placeholder: 例如 reader-files-v1.0
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: 公開資訊確認
+      options:
+        - label: 我已移除秘密、私人路徑與未公開資料。
+          required: true
